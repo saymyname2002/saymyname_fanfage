@@ -46,107 +46,132 @@
         </section>
     </main>
 
-    <script>
-        let currentMember = 'ALL';
-const memberOrder = ['HITOMI', 'SHUIE', 'MEI', 'KANNY', 'SOHA', 'DOHEE', 'JUNHWI', 'SEUNGJOO'];
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-// 멤버별 색상 매핑 (공통 사용)
-const memberColors = {
-    'HITOMI': '#f6f07b',
-    'SHUIE': '#cca9dd',
-    'MEI': '#f2afce',
-    'KANNY': '#de3b60',
-    'SOHA': '#f47c50',
-    'DOHEE': '#f0f0f0',
-    'JUNHWI': '#464153',
-    'SEUNGJOO': '#bcddc4'
-};
-
-function showMemberSelect() {
-    document.getElementById('member-select-view').style.display = 'block';
-    document.getElementById('gallery-view').style.display = 'none';
-}
-
-function openMemberGallery(member) {
-    currentMember = member;
-    const uploadForm = document.getElementById('upload-form');
-    
-    document.getElementById('member-select-view').style.display = 'none';
-    document.getElementById('gallery-view').style.display = 'block';
-    document.getElementById('gallery-title').innerText = member === 'ALL' ? "SAY MY NAME PHOTO" : member + " GALLERY";
-
-    if (member === 'ALL') {
-        uploadForm.style.display = 'none';
-    } else {
-        uploadForm.style.display = 'block';
-        uploadForm.className = 'upload-section'; 
-        uploadForm.classList.add('bg-' + member.toLowerCase());
-    }
-    displayPhotos();
-}
-
-function uploadPhoto() {
-    const fileInput = document.getElementById('imageInput');
-    const nickInput = document.getElementById('nicknameInput'); // 닉네임 필드 가져오기
-
-    if (!nickInput.value.trim()) { alert("닉네임을 입력해주세요!"); return; } // 닉네임 확인
-    if (!fileInput.files[0]) { alert("사진을 선택해주세요!"); return; }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const photoData = {
-            id: Date.now(),
-            member: currentMember,
-            src: e.target.result,
-            nickname: nickInput.value.trim() // [추가] 닉네임 저장
-        };
-        let photos = JSON.parse(localStorage.getItem('saymyname_photos')) || [];
-        photos.push(photoData);
-        localStorage.setItem('saymyname_photos', JSON.stringify(photos));
-        
-        displayPhotos();
-        fileInput.value = "";
-        nickInput.value = ""; // 입력창 초기화
+    const firebaseConfig = {
+        apiKey: "AIzaSyBrhP_DPagVEzILp5MftnZXN5m1nJD3qgg",
+        authDomain: "saymyname-fanpage.firebaseapp.com",
+        projectId: "saymyname-fanpage",
+        storageBucket: "saymyname-fanpage.firebasestorage.app",
+        messagingSenderId: "613226162204",
+        appId: "1:613226162204:web:641483775d9fad18cf57d9",
+        measurementId: "G-XTHQ805VV9"
     };
-    reader.readAsDataURL(fileInput.files[0]);
-}
 
-// [중요] 삭제 버튼과 색상 기능이 통합된 displayPhotos
-function displayPhotos() {
-    const grid = document.getElementById('photo-grid');
-    let photos = JSON.parse(localStorage.getItem('saymyname_photos')) || [];
-    
-    if (currentMember === 'ALL') {
-        photos.sort((a, b) => memberOrder.indexOf(a.member) - memberOrder.indexOf(b.member));
-    } else {
-        photos = photos.filter(p => p.member === currentMember);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const photoCol = collection(db, "photos");
+
+    let currentMember = 'ALL';
+    const memberOrder = ['HITOMI', 'SHUIE', 'MEI', 'KANNY', 'SOHA', 'DOHEE', 'JUNHWI', 'SEUNGJOO'];
+    const memberColors = {
+        'HITOMI': '#f6f07b', 'SHUIE': '#cca9dd', 'MEI': '#f2afce', 'KANNY': '#de3b60',
+        'SOHA': '#f47c50', 'DOHEE': '#f0f0f0', 'JUNHWI': '#464153', 'SEUNGJOO': '#bcddc4'
+    };
+
+    // 화면 전환 함수들 (전역 등록)
+    window.showMemberSelect = () => {
+        document.getElementById('member-select-view').style.display = 'block';
+        document.getElementById('gallery-view').style.display = 'none';
+    };
+
+    window.openMemberGallery = (member) => {
+        currentMember = member;
+        document.getElementById('member-select-view').style.display = 'none';
+        document.getElementById('gallery-view').style.display = 'block';
+        document.getElementById('gallery-title').innerText = member === 'ALL' ? "SAY MY NAME PHOTO" : member + " GALLERY";
+        
+        const uploadForm = document.getElementById('upload-form');
+        uploadForm.style.display = (member === 'ALL') ? 'none' : 'block';
+        
+        loadPhotos(); // 멤버 변경 시 사진 다시 불러오기
+    };
+
+    // [사진 업로드] Firebase Storage + Firestore
+    window.uploadPhoto = async () => {
+        const fileInput = document.getElementById('imageInput');
+        const nickInput = document.getElementById('nicknameInput');
+        const file = fileInput.files[0];
+
+        if (!nickInput.value.trim()) return alert("닉네임을 입력해주세요!");
+        if (!file) return alert("사진을 선택해주세요!");
+
+        try {
+            alert("사진을 업로드 중입니다...");
+            const fileName = `gallery/${Date.now()}_${file.name}`;
+            const storageRef = ref(storage, fileName);
+            
+            // 1. Storage 업로드
+            const snapshot = await uploadBytes(storageRef, file);
+            const url = await getDownloadURL(snapshot.ref);
+
+            // 2. Firestore 기록 (멤버 정보 포함)
+            await addDoc(photoCol, {
+                nickname: nickInput.value.trim(),
+                imageUrl: url,
+                storagePath: fileName, // 삭제를 위해 경로 저장
+                member: currentMember,
+                timestamp: serverTimestamp()
+            });
+
+            fileInput.value = "";
+            nickInput.value = "";
+            alert("등록 완료!");
+        } catch (e) {
+            console.error(e);
+            alert("업로드 실패!");
+        }
+    };
+
+    // [실시간 읽기] 멤버별 필터링 적용
+    function loadPhotos() {
+        let q = query(photoCol, orderBy("timestamp", "desc"));
+        
+        // 전체보기가 아닐 경우 해당 멤버만 필터링
+        if (currentMember !== 'ALL') {
+            q = query(photoCol, where("member", "==", currentMember), orderBy("timestamp", "desc"));
+        }
+
+        onSnapshot(q, (snapshot) => {
+            const grid = document.getElementById('photo-grid');
+            grid.innerHTML = "";
+            
+            let docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            // 전체보기일 경우 멤버 순서대로 정렬
+            if (currentMember === 'ALL') {
+                docs.sort((a, b) => memberOrder.indexOf(a.member) - memberOrder.indexOf(b.member));
+            }
+
+            docs.forEach((p) => {
+                const bgColor = memberColors[p.member] || '#ee9ca7';
+                const textColor = (p.member === 'DOHEE') ? '#333' : 'white';
+                
+                grid.innerHTML += `
+                    <div class="photo-card">
+                        <img src="${p.imageUrl}">
+                        <div class="tag" style="background-color: ${bgColor}; color: ${textColor};">${p.member}</div>
+                        <div class="uploader-name">By. ${p.nickname}</div>
+                        <button class="delete-btn" onclick="deletePhoto('${p.id}', '${p.storagePath}')">×</button>
+                    </div>
+                `;
+            });
+        });
     }
 
-    grid.innerHTML = photos.map(p => {
-    const bgColor = memberColors[p.member] || '#ee9ca7';
-    const textColor = (p.member === 'DOHEE') ? '#333' : 'white';
-
-    return `
-        <div class="photo-card">
-            <img src="${p.src}">
-            <div class="tag" style="background-color: ${bgColor}; color: ${textColor};">
-                ${p.member}
-            </div>
-            <div class="uploader-name">By. ${p.nickname || '익명'}</div> 
-            <button class="delete-btn" onclick="deletePhoto(${p.id})">×</button>
-        </div>
-    `;
-}).join('');
-}
-
-function deletePhoto(id) {
-    if (confirm("이 사진을 삭제하시겠습니까?")) {
-        let photos = JSON.parse(localStorage.getItem('saymyname_photos')) || [];
-        photos = photos.filter(p => p.id !== id);
-        localStorage.setItem('saymyname_photos', JSON.stringify(photos));
-        displayPhotos();
-    }
-}
-    </script>
-</body>
-</html>
+    // [삭제] DB와 Storage 둘 다 삭제
+    window.deletePhoto = async (id, path) => {
+        if (!confirm("정말 삭제하시겠습니까?")) return;
+        try {
+            await deleteDoc(doc(db, "photos", id));
+            await deleteObject(ref(storage, path));
+            alert("삭제되었습니다.");
+        } catch (e) {
+            console.error(e);
+        }
+    };
+</script>
