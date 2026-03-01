@@ -210,12 +210,17 @@
                 const bgColor = memberColors[p.member] || '#ee9ca7';
                 const textColor = (p.member === 'DOHEE') ? '#333' : 'white';
                 
+                // [수정 포인트] 전체보기('ALL')가 아닐 때만 삭제 버튼 코드를 생성합니다.
+                const deleteBtnHtml = (currentMember !== 'ALL') 
+                    ? `<button class="delete-btn" onclick="deletePhoto('${p.id}', '${p.storagePath}')">×</button>` 
+                    : '';
+
                 grid.innerHTML += `
                     <div class="photo-card">
                         <img src="${p.imageUrl}">
                         <div class="tag" style="background-color: ${bgColor}; color: ${textColor};">${p.member}</div>
                         <div class="uploader-name">By. ${p.nickname}</div>
-                        <button class="delete-btn" onclick="deletePhoto('${p.id}', '${p.storagePath}')">×</button>
+                        ${deleteBtnHtml}
                     </div>
                 `;
             });
@@ -235,3 +240,4 @@
         }
     };
 </script>
+
