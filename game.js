@@ -208,7 +208,7 @@ function endGame() {
     ctx.fillText("다시 하려면 클릭하세요", canvas.width / 2, canvas.height / 2 + 60);
 
     setTimeout(() => {
-        const playerName = prompt(`점수: ${score}\n이름을 입력하세요:`, "");
+        const playerName = prompt(`점수: ${score}\n닉네임을 입력하세요:`, "");
         if (playerName) saveRank(playerName, score);
     }, 100);
 }
@@ -287,3 +287,4 @@ loadRankings();
 
 // 노래가 끝나면 자동으로 다른 랜덤 노래 재생
 bgm.addEventListener('ended', playRandomBGM);
+
