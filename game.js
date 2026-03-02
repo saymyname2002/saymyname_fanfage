@@ -196,9 +196,6 @@ function endGame() {
     bgm.pause(); // 게임 오버 시 음악 일시정지
     bgm.currentTime = 0; // 음악을 다시 처음으로 되돌림
 
-    // 게임이 끝났으므로 숨겨져 있던 순위판을 보여줍니다.
-    document.querySelector(".ranking-board").style.display = "block";
-
     // 튕김 방지: 화면을 먼저 그린 후 팝업 띄우기
     ctx.fillStyle = "rgba(0,0,0,0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -222,9 +219,6 @@ function resetGame() {
     members = [];
     spawnRate = 0.02;
     document.getElementById("score").innerText = `Score: 0`;
-
-    // 순위판 숨기기
-    document.querySelector(".ranking-board").style.display = "none";
     
     // [수정] 노래를 멈췄다가 다시 선택해서 재생
     bgm.pause();
