@@ -74,22 +74,31 @@
             }
         };
 
-        // [읽기] 실시간 데이터 감시
+        // [수정된 읽기 부분] 실시간 데이터 감시
         const q = query(boardCol, orderBy("timestamp", "desc"));
+
+        // 고유색을 가진 멤버 리스트 정의
+        const memberClassList = ['hitomi', 'shuie', 'mei', 'kanny', 'soha', 'dohee', 'junhwi', 'seungjoo'];
+
         onSnapshot(q, (snapshot) => {
             const list = document.getElementById('messageList');
             if(!list) return;
 
             list.innerHTML = ""; 
-            snapshot.forEach((doc) => {
+            
+            // index를 활용하여 색상을 순환시킵니다.
+            snapshot.docs.forEach((doc, index) => {
                 const data = doc.data();
                 const date = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleString() : "방금 전";
                 
+                // 8가지 색상을 번갈아가며 선택 (나머지 연산자 % 사용)
+                const memberClass = memberClassList[index % memberClassList.length];
+                
                 list.innerHTML += `
-                    <div class="message-card">
+                    <div class="message-card ${memberClass}">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div>
-                                <strong>${data.nickname}</strong> <small>${date}</small>
+                                <strong class="member-name">${data.nickname}</strong> <small>${date}</small>
                             </div>
                         </div>
                         <p>${data.content}</p>
