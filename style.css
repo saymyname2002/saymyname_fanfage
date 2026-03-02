@@ -133,7 +133,7 @@ nav a {
 
 .message-form button {
     background: #53d4b4;
-    color: white;
+    color: #ffffff;
     border: none;
     padding: 12px;
     border-radius: 8px;
@@ -143,8 +143,8 @@ nav a {
 }
 
 .message-form button:hover {
-    background: #ffdde1;
-    color: #333;
+    background: #53d4b4;
+    color: #000000;
 }
 
 /* 메시지 목록 디자인(board) */ 
