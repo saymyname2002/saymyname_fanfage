@@ -1,40 +1,119 @@
-// [수정된 읽기 부분] 실시간 데이터 감시
-const q = query(boardCol, orderBy("timestamp", "desc"));
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAY MY NAME - FAN BOARD</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="background-color: #fffafb;">
+    <header>
+        <nav>
+            <div class="logo">EggRoll</div>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="photo.html">PHOTO</a></li>
+                <li><a href="game.html">GAME</a></li>
+            </ul>
+        </nav>
+    </header>
 
-// 고유색을 가진 멤버 리스트 정의
-const memberClassList = ['hitomi', 'shuie', 'mei', 'kanny', 'soha', 'dohee', 'junhwi', 'seungjoo'];
-
-onSnapshot(q, (snapshot) => {
-    const list = document.getElementById('messageList');
-    if(!list) return;
-
-    list.innerHTML = ""; 
-    
-    // 전체 문서 개수 확인
-    const totalDocs = snapshot.docs.length;
-
-    snapshot.docs.forEach((doc, index) => {
-        const data = doc.data();
-        const date = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleString() : "방금 전";
-        
-        /* [핵심 로직]
-           최신순 정렬일 때, 가장 오래된 글(마지막 index)이 0번째 색상(HITOMI)을 갖게 합니다.
-           총 개수가 5개라면:
-           - index 4 (가장 오래된 글): (5 - 1 - 4) = 0 => HITOMI
-           - index 0 (가장 최신 글): (5 - 1 - 0) = 4 => SOHA
-        */
-        const colorIndex = (totalDocs - 1 - index) % memberClassList.length;
-        const memberClass = memberClassList[colorIndex];
-        
-        list.innerHTML += `
-            <div class="message-card ${memberClass}">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div>
-                        <strong class="member-name">${data.nickname}</strong> <small>${date}</small>
-                    </div>
+    <main>
+        <section id="board">
+            <h2>FAN BOARD</h2>
+            <p>SAY MY NAME에게 응원의 한마디를 남겨주세요!</p>
+            <div class="board-container">
+                <div class="message-form">
+                    <input type="text" id="nicknameInput" placeholder="닉네임">
+                    <textarea id="contentInput" placeholder="응원 메시지를 입력하세요!"></textarea>
+                    <button onclick="sendMessage()">등록하기</button>
                 </div>
-                <p>${data.content}</p>
+                <div id="messageList" class="message-list"></div>
             </div>
-        `;
-    });
-});
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrhP_DPagVEzILp5MftnZXN5m1nJD3qgg",
+            authDomain: "saymyname-fanpage.firebaseapp.com",
+            projectId: "saymyname-fanpage",
+            storageBucket: "saymyname-fanpage.firebasestorage.app",
+            messagingSenderId: "613226162204",
+            appId: "1:613226162204:web:641483775d9fad18cf57d9",
+            measurementId: "G-XTHQ805VV9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const boardCol = collection(db, "messages");
+
+        // [쓰기] 메시지 전송 함수
+        window.sendMessage = async function() {
+            const nickname = document.getElementById('nicknameInput').value;
+            const content = document.getElementById('contentInput').value;
+
+            if(!nickname || !content) return alert("닉네임과 내용을 입력해주세요!");
+
+            try {
+                await addDoc(boardCol, {
+                    nickname: nickname,
+                    content: content,
+                    timestamp: serverTimestamp()
+                });
+                
+                document.getElementById('nicknameInput').value = "";
+                document.getElementById('contentInput').value = "";
+                alert("게시글이 등록되었습니다!");
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                alert("등록에 실패했습니다.");
+            }
+        };
+
+            // [수정된 읽기 부분] 실시간 데이터 감시
+            const q = query(boardCol, orderBy("timestamp", "desc"));
+
+            // 고유색을 가진 멤버 리스트 정의
+            const memberClassList = ['hitomi', 'shuie', 'mei', 'kanny', 'soha', 'dohee', 'junhwi', 'seungjoo'];
+
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('messageList');
+                if(!list) return;
+
+                list.innerHTML = ""; 
+                
+                // 전체 문서 개수 확인
+                const totalDocs = snapshot.docs.length;
+
+                snapshot.docs.forEach((doc, index) => {
+                    const data = doc.data();
+                    const date = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleString() : "방금 전";
+                    
+                    /* [핵심 로직]
+                    최신순 정렬일 때, 가장 오래된 글(마지막 index)이 0번째 색상(HITOMI)을 갖게 합니다.
+                    총 개수가 5개라면:
+                    - index 4 (가장 오래된 글): (5 - 1 - 4) = 0 => HITOMI
+                    - index 0 (가장 최신 글): (5 - 1 - 0) = 4 => SOHA
+                    */
+                    const colorIndex = (totalDocs - 1 - index) % memberClassList.length;
+                    const memberClass = memberClassList[colorIndex];
+                    
+                    list.innerHTML += `
+                        <div class="message-card ${memberClass}">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <strong class="member-name">${data.nickname}</strong> <small>${date}</small>
+                                </div>
+                            </div>
+                            <p>${data.content}</p>
+                        </div>
+                    `;
+                });
+            });
+    </script>
+</body>
+</html>
