@@ -92,23 +92,22 @@
 
     </main>
 
-    <script type="module">
+<script type="module">
     // 1. Firebase 라이브러리 불러오기
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-    // 2. 본인의 Firebase 설정 (이미지에서 복사한 본인 것으로 교체!)
+    // 2. 본인의 Firebase 설정
     const firebaseConfig = {
-    apiKey: "AIzaSyBrhP_DPagVEzILp5MftnZXN5m1nJD3qgg",
-    authDomain: "saymyname-fanpage.firebaseapp.com",
-    projectId: "saymyname-fanpage",
-    storageBucket: "saymyname-fanpage.firebasestorage.app",
-    messagingSenderId: "613226162204",
-    appId: "1:613226162204:web:641483775d9fad18cf57d9",
-    measurementId: "G-XTHQ805VV9"
-  };
-
+        apiKey: "AIzaSyBrhP_DPagVEzILp5MftnZXN5m1nJD3qgg",
+        authDomain: "saymyname-fanpage.firebaseapp.com",
+        projectId: "saymyname-fanpage",
+        storageBucket: "saymyname-fanpage.firebasestorage.app",
+        messagingSenderId: "613226162204",
+        appId: "1:613226162204:web:641483775d9fad18cf57d9",
+        measurementId: "G-XTHQ805VV9"
+    };
 
     // 3. 초기화
     const app = initializeApp(firebaseConfig);
@@ -122,8 +121,6 @@
         'HITOMI': '#f6f07b', 'SHUIE': '#cca9dd', 'MEI': '#f2afce', 'KANNY': '#de3b60',
         'SOHA': '#f47c50', 'DOHEE': '#f0f0f0', 'JUNHWI': '#464153', 'SEUNGJOO': '#bcddc4'
     };
-
-    // --- 여기서부터 함수 정의 ---
 
     // 화면 전환 함수
     window.showMemberSelect = () => {
@@ -142,15 +139,14 @@
             uploadForm.style.display = 'none';
         } else {
             uploadForm.style.display = 'block';
-            // 배경색 동적 변경
             uploadForm.style.backgroundColor = memberColors[member] || '#fff';
             uploadForm.style.color = (member === 'HITOMI' || member === 'DOHEE') ? '#333' : 'white';
         }
         
-        loadPhotos(); // 사진 불러오기 실행
+        loadPhotos(); 
     };
 
-    // [핵심] 사진 업로드 함수
+    // 사진 업로드 함수
     window.uploadPhoto = async () => {
         const fileInput = document.getElementById('imageInput');
         const nickInput = document.getElementById('nicknameInput');
@@ -161,14 +157,11 @@
 
         try {
             alert("사진 업로드 중... 잠시만 기다려주세요.");
-            
-            // A. Storage에 파일 저장
             const fileName = `gallery/${Date.now()}_${file.name}`;
             const storageRef = ref(storage, fileName);
             const snapshot = await uploadBytes(storageRef, file);
             const url = await getDownloadURL(snapshot.ref);
 
-            // B. Firestore에 정보 저장 (멤버 정보 포함)
             await addDoc(photoCol, {
                 nickname: nickInput.value.trim(),
                 imageUrl: url,
@@ -186,11 +179,10 @@
         }
     };
 
-    // [핵심] 사진 실시간 목록 불러오기 함수
+    // 사진 실시간 목록 불러오기 함수 (삭제 버튼 제거됨)
     function loadPhotos() {
         let q = query(photoCol, orderBy("timestamp", "desc"));
         
-        // 특정 멤버 선택 시 필터링
         if (currentMember !== 'ALL') {
             q = query(photoCol, where("member", "==", currentMember), orderBy("timestamp", "desc"));
         }
@@ -201,7 +193,6 @@
             
             let docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            // 전체보기일 경우 멤버 순서대로 정렬
             if (currentMember === 'ALL') {
                 docs.sort((a, b) => memberOrder.indexOf(a.member) - memberOrder.indexOf(b.member));
             }
@@ -210,33 +201,15 @@
                 const bgColor = memberColors[p.member] || '#ee9ca7';
                 const textColor = (p.member === 'DOHEE') ? '#333' : 'white';
                 
-                // [수정 포인트] 전체보기('ALL')가 아닐 때만 삭제 버튼 코드를 생성합니다.
-                const deleteBtnHtml = (currentMember !== 'ALL') 
-                    ? `<button class="delete-btn" onclick="deletePhoto('${p.id}', '${p.storagePath}')">×</button>` 
-                    : '';
-
+                // 삭제 버튼(deleteBtnHtml) 변수를 아예 제거했습니다.
                 grid.innerHTML += `
                     <div class="photo-card">
                         <img src="${p.imageUrl}">
                         <div class="tag" style="background-color: ${bgColor}; color: ${textColor};">${p.member}</div>
                         <div class="uploader-name">By. ${p.nickname}</div>
-                        ${deleteBtnHtml}
                     </div>
                 `;
             });
         });
     }
-
-    // [핵심] 사진 삭제 함수
-    window.deletePhoto = async (id, path) => {
-        if (!confirm("정말 삭제하시겠습니까?")) return;
-        try {
-            await deleteDoc(doc(db, "photos", id)); // DB 삭제
-            await deleteObject(ref(storage, path)); // 파일 삭제
-            alert("삭제되었습니다.");
-        } catch (e) {
-            console.error(e);
-            alert("삭제 실패!");
-        }
-    };
 </script>
