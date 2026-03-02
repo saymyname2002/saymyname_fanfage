@@ -60,3 +60,96 @@
 </body>
 </html>
 
+<div id="guideModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>🎮 SAY MY NAME 팬 페이지 가이드</h2>
+        <hr>
+        <div class="guide-item">
+            <strong>📸 PHOTO 갤러리</strong>
+            <p>좋아하는 사진을 로미들과 공유해보자~ 너무 많이 올리면 서버 터진다냥~</p>
+        </div>
+        <div class="guide-item">
+            <strong>💬 FAN BOARD</strong>
+            <p>멤버들에게 응원의 한마디를! 불편한 글은 관리자가 처리할게냥~</p>
+        </div>
+        <div class="guide-item">
+            <strong>🕹️ GAME (피하기)</strong>
+            <p>마우스나 터치로 고양이를 움직여 멤버들을 피해 점수를 기록해보자냥~</p>
+        </div>
+        <button onclick="closeGuide()">확인했습니다!</button>
+    </div>
+</div>
+
+<style>
+    /* 팝업 전체 배경 */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* 배경 어둡게 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* 최상단 배치 */
+}
+
+/* 팝업 박스 */
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 415px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-content h2 { color: #ee9ca7; margin-bottom: 15px; }
+
+.guide-item {
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.guide-item strong { display: block; color: #333; margin-bottom: 3px; }
+
+.modal-content button {
+    background: #ee9ca7;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+</style>
+
+<script>
+// 1. 페이지 로드 시 실행
+window.addEventListener('load', () => {
+    const guideModal = document.getElementById('guideModal');
+    const lastCloseDate = localStorage.getItem('guideLastClose'); // 저장된 날짜 가져오기
+    const today = new Date().toDateString(); // 오늘의 날짜 (예: "Mon Mar 02 2026")
+
+    // 저장된 날짜가 오늘과 다를 때만 팝업을 보여줌
+    if (lastCloseDate !== today) {
+        guideModal.style.display = 'flex';
+    } else {
+        guideModal.style.display = 'none';
+    }
+});
+
+// 2. 설명서 닫기 함수
+window.closeGuide = function() {
+    const guideModal = document.getElementById('guideModal');
+    const today = new Date().toDateString();
+
+    // 현재 날짜를 localStorage에 저장 (오늘 하루 보지 않기 기록)
+    localStorage.setItem('guideLastClose', today);
+    
+    // 팝업 닫기
+    guideModal.style.display = 'none';
+};
+</script>
