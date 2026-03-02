@@ -61,7 +61,7 @@ function playVideo(videoId) {
                 allowfullscreen
                 style="border-radius: 12px;">
             </iframe>
-            <button onclick="resetPhotos()" style="margin-top:10px; cursor:pointer; padding:5px 10px; border-radius:5px; border:1px solid #ddd; background:#fff;">
+            <button onclick="resetPhotos()" style="margin-top:10px; cursor:pointer; padding:5px 10px; border-radius:5px; border:1px solid #ddd; background:#E0E0E0;">
                 ↺ 사진 목록으로 돌아가기
             </button>
         </div>
