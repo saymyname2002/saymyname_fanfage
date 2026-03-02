@@ -92,6 +92,41 @@ canvas.addEventListener("mousemove", (e) => {
     if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
 });
 
+/* --- 터치 이벤트 (모바일 대응) --- */
+
+// 터치가 시작될 때 (클릭과 동일한 효과)
+canvas.addEventListener("touchstart", (e) => {
+    if (loadedImages < memberImagePaths.length || !playerLoaded) return;
+    
+    if (!gameStarted) {
+        gameStarted = true;
+        gameOver = false;
+        playRandomBGM();
+        requestAnimationFrame(update);
+    } else if (gameOver) {
+        resetGame();
+    }
+    // 모바일 기본 브라우저 액션(스크롤 등) 방지
+    if (e.cancelable) e.preventDefault();
+}, { passive: false });
+
+// 터치 이동 중 (플레이어 이동)
+canvas.addEventListener("touchmove", (e) => {
+    if (!gameStarted || gameOver) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0]; // 첫 번째 손가락 터치 정보
+    
+    // 터치 좌표를 캔버스 내부 좌표로 변환
+    player.x = touch.clientX - rect.left - player.w / 2;
+
+    // 화면 밖으로 나가지 않게 제한
+    if (player.x < 0) player.x = 0;
+    if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
+
+    if (e.cancelable) e.preventDefault();
+}, { passive: false });
+
 canvas.addEventListener("click", () => {
     if (loadedImages < memberImagePaths.length || !playerLoaded) return; 
     
@@ -287,4 +322,3 @@ loadRankings();
 
 // 노래가 끝나면 자동으로 다른 랜덤 노래 재생
 bgm.addEventListener('ended', playRandomBGM);
-
