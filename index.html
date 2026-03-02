@@ -41,12 +41,29 @@
     </main>
 
 <footer>
-        <p>&copy; 2026 SAY MY NAME FAN SITE</p>
-        <div class="footer-content">
+        <footer>
+    <div class="footer-content">
+        <p>© 2026 SAY MY NAME FAN SITE | 비공식 팬 사이트</p>
         <p style="font-size: 0.8rem; color: #999;">
             본 사이트는 팬심으로 제작된 비공식 팬사이트이며, 본 사이트 내의 모든 콘텐츠(사진, 영상, 로고 등)에 대한 저작권은 각 원저작자에게 있으며, 사업적 목적으로 활용하지 않습니다.
         </p>
+        <a href="javascript:void(0)" onclick="openPrivacy()" class="privacy-link">개인정보처리방침</a>
     </div>
+</footer>
+
+<div id="privacyModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="text-align: left; max-width: 600px;">
+        <h3>🔐 개인정보처리방침 요약</h3>
+        <hr>
+        <p style="font-size: 13px; line-height: 1.6; color: #666;">
+            1. <strong>수집항목</strong>: 닉네임, 작성 메시지, 업로드 사진, 기술적 정보가 자동으로 수집될 수 있음.<br>
+            2. <strong>수집목적</strong>: 팬 게시판 운영 및 게임 랭킹 서비스 제공.<br>
+            3. <strong>주의사항</strong>: 본 사이트는 비상업적 팬사이트이며, 얼굴이 포함된 사진 등 민감한 개인정보 업로드를 권장하지 않습니다. SAY MY NAME의 예쁜 모습만 업로드 해주세요!<br>
+            ※<strong></strong> 사용자의 데이터를 Firebase에 저장하며, 오직 서비스 제공 목적으로만 사용하고 언제든지 삭제할 수 있습니다.<br>
+        </p>
+        <button onclick="closePrivacy()" style="margin-top: 15px; width: 100%;">닫기</button>
+    </div>
+</div>
     </footer>
     
     <div id="profile-modal" class="modal">
@@ -57,6 +74,7 @@
         </div>
     </div>
     <script src="script.js"></script>
+    
 </body>
 </html>
 
@@ -81,6 +99,29 @@
 </div>
 
 <style>
+footer {
+    padding: 30px 20px;
+    background-color: #f9f9f9;
+    text-align: center;
+    border-top: 1px solid #eee;
+}
+
+.footer-content p {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 5px;
+}
+
+.privacy-link {
+    font-size: 12px;
+    color: #ee9ca7;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.privacy-link:hover {
+    color: #ffdde1;
+}
     /* 팝업 전체 배경 */
 .modal-overlay {
     position: fixed;
@@ -152,4 +193,14 @@ window.closeGuide = function() {
     // 팝업 닫기
     guideModal.style.display = 'none';
 };
+
+// 개인정보 팝업 열기
+function openPrivacy() {
+    document.getElementById('privacyModal').style.display = 'flex';
+}
+
+// 개인정보 팝업 닫기
+function closePrivacy() {
+    document.getElementById('privacyModal').style.display = 'none';
+}
 </script>
