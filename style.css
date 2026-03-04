@@ -474,3 +474,73 @@ nav a {
     border: 1px solid #ddd;
     border-radius: 6px;
 }
+
+/* 모바일 전용 스타일 (화면 너비 768px 이하일 때 적용) */
+@media screen and (max-width: 768px) {
+    
+    /* 1. 네비게이션 바: 메뉴가 겹치지 않게 간격 조정 */
+    nav {
+        flex-direction: column; /* 로고와 메뉴를 위아래로 */
+        gap: 10px;
+    }
+    
+    nav ul {
+        padding: 0;
+        gap: 15px; /* 메뉴 사이 간격 좁히기 */
+    }
+
+    /* 2. 메인 섹션: 텍스트 크기 줄이기 */
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+    }
+
+    /* 3. 멤버 그리드: 한 줄에 2개씩 보이게 (현재는 너무 작아질 수 있음) */
+    .member-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2열 배치 */
+        gap: 10px;
+    }
+    
+    .member-card {
+        padding: 20px 10px; /* 패딩 줄이기 */
+        font-size: 14px;
+    }
+
+    /* 4. 사진 갤러리: 한 줄에 1개 또는 2개로 고정 */
+    .photo-grid {
+        grid-template-columns: repeat(2, 1fr); /* 모바일은 2열이 예뻐요 */
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .photo-card img {
+        height: 200px; /* 모바일에서는 높이를 조금 줄임 */
+    }
+
+    /* 5. 팝업(모달): 화면에 꽉 차게 조절 */
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+        margin: 20% auto;
+    }
+    
+    .modal-image-container .modal-img {
+        width: 150px; /* 모바일 모달 내 이미지 크기 조절 */
+        height: 220px;
+    }
+
+    /* 6. 게시판 입력창: 너비 100% 사용 */
+    .message-form {
+        width: 100%;
+        box-sizing: border-box; /* 패딩이 너비를 넘지 않게 */
+    }
+    
+    #nicknameInput {
+        width: 100% !important; /* 닉네임 입력창 가로 꽉 차게 */
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
