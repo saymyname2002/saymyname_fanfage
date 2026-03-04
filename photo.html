@@ -27,17 +27,13 @@
                 <li><a href="board.html">BOARD</a></li>
 
                 <li><a href="game.html">GAME</a></li>
-
             </ul>
 
         </nav>
 
     </header>
 
-
-
     <main id="photo-page">
-
         <section id="member-select-view">
 
             <h2>최애 멤버를 선택해 주세요!</h2>
@@ -100,7 +96,7 @@
 
     // 2. 본인의 Firebase 설정
     const firebaseConfig = {
-        apiKey: "AIzaSyBrhP_DPagVEzILp5MftnZXN5m1nJD3qgg",
+        apiKey: "AIzaSyDLd5TiG307LXMxTW2pOkzPQsVmHBrhaBM",
         authDomain: "saymyname-fanpage.firebaseapp.com",
         projectId: "saymyname-fanpage",
         storageBucket: "saymyname-fanpage.firebasestorage.app",
@@ -178,7 +174,6 @@
             alert("업로드 실패: " + e.message);
         }
     };
-
     // 사진 실시간 목록 불러오기 함수 (삭제 버튼 제거됨)
     function loadPhotos() {
         let q = query(photoCol, orderBy("timestamp", "desc"));
