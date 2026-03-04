@@ -4,7 +4,7 @@ import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, se
 
 // 2. 본인의 Firebase 설정 (photo.js에 있는 것과 동일)
 const firebaseConfig = {
-    apiKey: "AIzaSyBrhP_DPagVEzILp5MftnZXN5m1nJD3qgg",
+    apiKey: "AIzaSyDLd5TiG307LXMxTW2pOkzPQsVmHBrhaBM",
     authDomain: "saymyname-fanpage.firebaseapp.com",
     projectId: "saymyname-fanpage",
     storageBucket: "saymyname-fanpage.firebasestorage.app",
@@ -77,7 +77,7 @@ let gameOver = false;
 let gameStarted = false;
 let animationId; 
 let members = [];
-let spawnRate = 0.02;
+let spawnRate = 0.012;
 
 // 플레이어 설정 (이미지 비율에 따라 w, h를 조절하세요)
 const player = { x: 180, y: 510, w: 35, h: 35 }; 
@@ -146,7 +146,7 @@ function createMember() {
         x: Math.random() * (canvas.width - 40),
         y: -50,
         w: 40, h: 40,
-        speed: 2 + Math.random() * (score / 500)
+        speed: 1.5 + Math.random() * (score / 2000)
     };
 }
 
@@ -180,7 +180,7 @@ function update() {
         members.push(createMember());
     }
     // 난이도 상승 (생성 빈도 증가)
-    spawnRate += 0.000005; 
+    spawnRate += 0.000001; 
 
     // 2. 장애물 이동 및 그리기 (중첩 루프를 하나로 합침)
     for (let i = members.length - 1; i >= 0; i--) {
