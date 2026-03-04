@@ -484,51 +484,61 @@ section img {
     margin: 0 auto;             /* 중앙 정렬 */
 }
 
+/* 모바일 화면 (768px 이하) 최적화 */
 @media screen and (max-width: 768px) {
+    
+    /* 공통: 모든 섹션의 컨텐츠를 중앙으로 */
+    #photo-page, #game-container, .game-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* 가로 중앙 정렬 */
+        padding: 20px 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* 1. PHOTO 페이지: 멤버 선택 버튼들 정렬 */
+    .member-selector {
+        display: flex;
+        flex-wrap: wrap; /* 줄바꿈 허용 */
+        justify-content: center; /* 버튼들을 가운데로 */
+        gap: 8px;
+        width: 100%;
+    }
+
+    .member-selector button {
+        flex: 0 1 calc(33% - 10px); /* 한 줄에 3개씩 균등 배치 */
+        font-size: 12px;
+        padding: 8px 5px;
+    }
+
+    /* 2. GAME 페이지: 캔버스와 랭킹 보드 정렬 */
+    canvas {
+        max-width: 100%;    /* 화면을 넘지 않게 */
+        height: auto !important;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    /* 실시간 TOP 10 랭킹 박스를 BOARD처럼 디자인 */
+    .ranking-box, #leaderboard {
+        width: 90% !important;
+        max-width: 400px;
+        margin-top: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* BOARD와 동일한 그림자 */
+        text-align: left; /* 내용은 왼쪽 정렬 */
+    }
+
+    /* 3. 상단 메뉴바 가독성 개선 */
     nav {
-        padding: 10px;
-        justify-content: space-between; /* 로고는 왼쪽, 메뉴는 오른쪽 */
+        justify-content: space-around;
+        padding: 10px 0;
     }
     
     nav ul {
-        gap: 10px; /* 메뉴 사이 간격 줄임 */
-    }
-
-    nav a {
-        font-size: 14px; /* 모바일 전용 글자 크기 */
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .member-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr) !important; /* 무조건 한 줄에 2개 */
-        gap: 10px;
-        padding: 0 10px;
-    }
-
-    .member-card {
-        padding: 15px 5px !important; /* 안쪽 여백 줄여서 글자 안 잘리게 */
-        font-size: 12px;
-        margin: 0; /* 마진 때문에 밀리는 것 방지 */
-    }
-}
-
-@media screen and (max-width: 768px) {
-    /* 게임 화면 컨테이너를 세로 정렬로 변경 */
-    .game-wrapper { 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    canvas {
-        width: 100% !important; /* 캔버스 가로를 화면에 맞춤 */
-        height: auto !important;
-    }
-
-    .ranking-box {
-        width: 90% !important;
-        margin-top: 20px;
+        gap: 15px;
     }
 }
