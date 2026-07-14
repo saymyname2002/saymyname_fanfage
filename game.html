@@ -69,15 +69,36 @@
 
 /* --- 모바일 기기 전용 미디어 쿼리 추가 --- */
 @media (max-width: 700px) {
+
+    /* 1. 상단 제목 및 점수 영역 여백 제거 */
+    .game-info {
+        margin-top: 5px; /* 헤더와의 간격 최소화 */
+        margin-bottom: 10px; /* 캔버스와의 간격 축소 */
+    }
+
+    .game-info h2 {
+        font-size: 1rem; /* 제목 글자 크기 축소 */
+        margin-bottom: 5px;
+    }
+
+    #score {
+        font-size: 1.1rem; /* 점수 글자 크기 약간 축소 */
+    }
+
     .game-wrapper {
         flex-direction: column; /* 모바일에서는 위아래(세로)로 배치 */
         align-items: center;    /* 가운데 정렬 */
+        margin-top: 0; /* 캔버스 상단 여백 제거 */
+        gap: 15px; /* 랭킹보드와의 간격 */
     }
 
     #gameCanvas {
         /* 모바일 화면 너비의 대부분을 차지하도록 설정 (양옆 여백 확보) */
         width: 90vw; 
         max-width: 400px; /* 원래 캔버스 크기인 400px은 넘지 않도록 제한 */
+        max-height: 70vh; 
+        height: auto;
+        aspect-ratio: 4 / 6;
     }
 
     .ranking-board {
