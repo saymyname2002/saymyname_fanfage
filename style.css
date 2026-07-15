@@ -37,32 +37,37 @@ nav a {
 
 /* 메인 섹션 수정 */
 .hero {
-    min-height: 60vh; /* height 대신 min-height 권장 */
+    min-height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     background: linear-gradient(135deg, #ffdde1, #ee9ca7);
     text-align: center;
-    padding: 40px 20px;
+    padding: 30px 20px 10px 20px;
     gap: 10px; /* 요소들 사이의 간격을 좁게 설정 (중요!) */
 }
 
 .hero h1 {
+    margin-top: 0;
     margin-bottom: 5px; /* 제목 아래 여백 최소화 */
 }
 
 .hero p {
     margin-top: 0;      /* 인사말 위 여백 제거 */
+    margin-bottom: 10px;
     font-size: 1.2rem;
     font-weight: 500;
 }
 
 /* 메인 사진 스타일링 수정 */
 .main-photo {
-    width: 90%;          /* 모바일 고려 */
-    max-width: 800px;    /* 너무 크면 부담스러우니 살짝 줄임 */
-    margin: 20px auto;   /* 중앙 정렬 및 위아래 여백 */
+     /* 3. 이미지의 가로 폭을 늘려서 상대적으로 여백이 적어 보이게 만듭니다. */
+    width: 95%;          
+    max-width: 950px;    /* 기존 800px에서 950px로 확대 */
+    
+    /* 4. 마진을 조절하여 아래쪽 여백을 완전히 붙이거나 최소화합니다. */
+    margin: 10px auto 0 auto;
 }
 
 .main-photo img {
